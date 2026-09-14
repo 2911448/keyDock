@@ -19,6 +19,10 @@ final class AppModel: ObservableObject {
     @Published var configurationNeedsRecovery = false
     @Published var loginEnabled = false
     @Published var loginNeedsApproval = false
+    var resumeFunctionEditor = false
+    let functionDraft = FunctionDraft()
+    private var functionExecutor: FunctionExecutor?
+    @Published var functionInProgress = false { didSet { updateGestureAvailability() } }
     let catalog = ApplicationCatalog()
     let monitor = KeyboardMonitor()
     let repository: ConfigurationRepository
@@ -66,13 +70,13 @@ final class AppModel: ObservableObject {
     func binding(for keyCode: UInt16) -> AppBinding? { configuration.bindings.first { $0.keyCode == keyCode } }
     func selectKey(_ code: UInt16) {
         guard PhysicalKeys.labels[code] != nil else { return }
-        if isEditing { selectedKey = code; sheet = .appPicker }
+        if isEditing { selectedKey = code; functionDraft.reset(binding: binding(for: code)); sheet = .appPicker }
         else { trigger(code) }
     }
-    func assign(_ app: CatalogApp) {
+    func assign(_ app: CatalogApp, function: AppFunction? = nil) {
         var updated = configuration
         updated.bindings.removeAll { $0.keyCode == selectedKey }
-        updated.bindings.append(AppBinding(keyCode: selectedKey, bundleIdentifier: app.bundleIdentifier, path: app.url.path, name: app.name))
+        updated.bindings.append(AppBinding(keyCode: selectedKey, bundleIdentifier: app.bundleIdentifier, path: app.url.path, name: app.name, function: function))
         if persist(updated) { sheet = nil }
     }
     func clearSelectedBinding() {
@@ -102,11 +106,11 @@ final class AppModel: ObservableObject {
     }
 
     private func updateGestureAvailability() {
-        monitor.gesturesEnabled = !isEditing && !isPaused && sheet == nil && !isSettingsFocused
+        monitor.gesturesEnabled = !isEditing && !isPaused && sheet == nil && !isSettingsFocused && !functionInProgress
     }
 
     private func handleKey(_ code: UInt16, flags: KeyModifiers, repeated: Bool) -> Bool {
-        guard sheet == nil && !isSettingsFocused else { return false }
+        guard sheet == nil && !isSettingsFocused && !functionInProgress else { return false }
         if isPanelVisible, code == 53 {
             if !repeated { onHidePanel?() }
             return true
@@ -139,6 +143,10 @@ final class AppModel: ObservableObject {
         if url.path != binding.path {
             var updated = configuration
             if let index = updated.bindings.firstIndex(where: { $0.keyCode == code }) { updated.bindings[index].path = url.path; _ = persist(updated) }
+        }
+        if let function = binding.function {
+            executeFunction(function, appURL: url, key: code)
+            return
         }
         let foreground = isPanelVisible ? previousFrontmost : NSWorkspace.shared.frontmostApplication
         let running = NSWorkspace.shared.runningApplications.first { app in
@@ -173,6 +181,35 @@ final class AppModel: ObservableObject {
             }
         }
     }
+    func testFunction(_ function: AppFunction, app: CatalogApp) {
+        executeFunction(function, appURL: app.url, key: selectedKey, testing: true)
+    }
+
+    private func executeFunction(_ function: AppFunction, appURL: URL, key: UInt16, testing: Bool = false) {
+        guard !functionInProgress else { return }
+        functionInProgress = true
+        if testing { resumeFunctionEditor = true }
+        errorMessage = nil
+        onHidePanel?()
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+            if self.functionExecutor == nil { self.functionExecutor = FunctionExecutor() }
+            var failed = false
+            do {
+                let message = try await self.functionExecutor!.execute(function, at: appURL, triggerKey: key)
+                self.lastAction = message
+                if testing { self.functionDraft.status = message + "。请确认目标功能是否实际执行。" }
+            } catch {
+                failed = true
+                self.lastAction = error.localizedDescription
+                if testing { self.functionDraft.status = error.localizedDescription }
+                else { self.showLaunchError(error.localizedDescription) }
+            }
+            self.functionInProgress = false
+            if testing && failed { self.onShowPanel?() }
+        }
+    }
+
     private func showLaunchError(_ message: String) { lastAction = message; errorMessage = message; onShowPanel?() }
 
     func refreshLoginStatus() {

@@ -66,24 +66,28 @@ public struct AppBinding: Codable, Equatable, Identifiable {
     public var bundleIdentifier: String?
     public var path: String
     public var name: String
+    public var function: AppFunction?
+    public var displayName: String { function.map { "\(name) · \($0.name)" } ?? name }
     public var id: UInt16 { keyCode }
-    public init(keyCode: UInt16, bundleIdentifier: String?, path: String, name: String) {
-        self.keyCode = keyCode; self.bundleIdentifier = bundleIdentifier; self.path = path; self.name = name
+    public init(keyCode: UInt16, bundleIdentifier: String?, path: String, name: String, function: AppFunction? = nil) {
+        self.keyCode = keyCode; self.bundleIdentifier = bundleIdentifier; self.path = path; self.name = name; self.function = function
     }
 }
 
 public struct Configuration: Codable, Equatable {
-    public var version: Int = 1
+    public var version: Int = 2
     public var prefix: Modifier = .control
     public var summonKey: Modifier = .control
     public var bindings: [AppBinding] = []
     public init() {}
     public func validated() throws -> Self {
-        guard version == 1 else { throw ConfigurationError.unsupportedVersion }
+        guard version == 1 || version == 2 else { throw ConfigurationError.unsupportedVersion }
         guard Set(bindings.map(\.keyCode)).count == bindings.count,
-              bindings.allSatisfy({ PhysicalKeys.labels[$0.keyCode] != nil && $0.path.hasPrefix("/") && !$0.name.isEmpty })
+              bindings.allSatisfy({ PhysicalKeys.labels[$0.keyCode] != nil && $0.path.hasPrefix("/") && !$0.name.isEmpty && ($0.function?.isValid ?? true) })
         else { throw ConfigurationError.invalidBindings }
-        return self
+        var migrated = self
+        migrated.version = 2
+        return migrated
     }
 }
 
@@ -105,11 +109,17 @@ public final class ConfigurationRepository {
         return try JSONDecoder().decode(Configuration.self, from: Data(contentsOf: url)).validated()
     }
     public func save(_ configuration: Configuration) throws {
-        _ = try configuration.validated()
+        let validated = try configuration.validated()
         try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
+        if FileManager.default.fileExists(atPath: url.path),
+           let original = try? Data(contentsOf: url),
+           let previous = try? JSONDecoder().decode(Configuration.self, from: original), previous.version == 1 {
+            let backup = url.deletingPathExtension().appendingPathExtension("v1-backup.json")
+            if !FileManager.default.fileExists(atPath: backup.path) { try original.write(to: backup, options: .atomic) }
+        }
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
-        try encoder.encode(configuration).write(to: url, options: .atomic)
+        try encoder.encode(validated).write(to: url, options: .atomic)
     }
     /// Preserve the original bytes before allowing a new configuration to replace them.
     public func backupAndReset() throws -> URL {

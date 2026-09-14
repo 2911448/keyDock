@@ -42,7 +42,7 @@ final class ConfigurationTests: XCTestCase {
         config.bindings = [binding, binding]
         XCTAssertThrowsError(try repository.save(config))
         config.bindings = []
-        config.version = 2
+        config.version = 999
         XCTAssertThrowsError(try repository.save(config))
     }
 }

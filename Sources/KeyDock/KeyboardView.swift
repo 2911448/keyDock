@@ -79,7 +79,7 @@ struct KeyboardView: View {
         .overlay(RoundedRectangle(cornerRadius: 22).strokeBorder(.primary.opacity(0.1), lineWidth: 1))
         .sheet(item: $model.sheet) { sheet in
             switch sheet {
-            case .appPicker: AppPickerView(model: model, catalog: model.catalog)
+            case .appPicker: AppPickerView(model: model, catalog: model.catalog, draft: model.functionDraft)
             }
         }
     }
@@ -96,7 +96,7 @@ struct KeyboardView: View {
                     Text(model.isEditing ? "编辑键盘" : "你的应用，触手可及")
                         .font(.system(size: 10, weight: .medium)).foregroundStyle(.secondary)
                 }
-                Text(model.isEditing ? "点击一个键帽，为它选择 App。" : "按字母或点击启动 · 再次调用前台 App 即可隐藏")
+                Text(model.isEditing ? "点击一个键帽，绑定应用或应用功能。" : "按字母或点击启动 · 再次调用前台 App 即可隐藏")
                     .font(.system(size: 11)).foregroundStyle(.secondary)
             }
             Spacer()
@@ -121,7 +121,7 @@ struct KeyboardView: View {
             if !model.listenerActive {
                 Button("启用全局快捷键") { model.showSettings() }
                     .buttonStyle(.plain).foregroundStyle(.secondary)
-            } else { Text(model.isPaused ? "全局快捷键已暂停" : "\(model.configuration.bindings.count) 个应用已就位").foregroundStyle(.secondary) }
+            } else { Text(model.isPaused ? "全局快捷键已暂停" : "\(model.configuration.bindings.count) 个绑定已就位").foregroundStyle(.secondary) }
             Spacer()
             if model.configuration.bindings.isEmpty {
                 Text("\(model.isEditing ? "从 A 开始，添加你的第一个 App" : "点击「编辑」开始配置")")
@@ -162,6 +162,10 @@ private struct KeyCapView: View {
                         Image(nsImage: model.catalog.icon(at: binding.path)).resizable().interpolation(.high).frame(width: 27, height: 27)
                         Text(key.label).font(.system(size: 9, weight: .semibold, design: .rounded)).foregroundStyle(.secondary)
                     }
+                    if binding.function != nil {
+                        Image(systemName: "bolt.circle.fill").font(.system(size: 12)).foregroundStyle(Color.accentColor)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing).padding(3)
+                    }
                     if model.isEditing && hovered {
                         Image(systemName: "pencil.circle.fill").font(.system(size: 13)).foregroundStyle(.white, Color.accentColor)
                             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing).padding(4)
@@ -182,8 +186,8 @@ private struct KeyCapView: View {
         .buttonStyle(.plain)
         .disabled(!actionable)
         .onHover { hovered = $0 }
-        .help(binding.map { "\(model.configuration.prefix.symbol)\(key.label) · \($0.name)" } ?? (key.code != nil ? "\(key.label) · \(model.isEditing ? "选择 App" : "未配置")" : key.label))
-        .accessibilityLabel("\(key.label)\(binding.map { "，\($0.name)" } ?? "")")
+        .help(binding.map { "\(model.configuration.prefix.symbol)\(key.label) · \($0.displayName)" } ?? (key.code != nil ? "\(key.label) · \(model.isEditing ? "选择 App" : "未配置")" : key.label))
+        .accessibilityLabel("\(key.label)\(binding.map { "，\($0.displayName)" } ?? "")")
         .accessibilityIdentifier(key.code.map { "key-\($0)" } ?? "decoration-\(key.label)")
     }
     private var background: Color {

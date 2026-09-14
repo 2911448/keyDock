@@ -6,6 +6,7 @@ import KeyDockCore
 struct AppPickerView: View {
     @ObservedObject var model: AppModel
     @ObservedObject var catalog: ApplicationCatalog
+    @ObservedObject var draft: FunctionDraft
     @State private var search = ""
     @FocusState private var searchFocused: Bool
     private var filtered: [CatalogApp] {
@@ -19,41 +20,49 @@ struct AppPickerView: View {
                     .font(.system(size: 25, weight: .medium, design: .rounded)).frame(width: 48, height: 48)
                     .background(.quaternary, in: RoundedRectangle(cornerRadius: 10))
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("为这个按键选择 App").font(.headline)
-                    Text("\(model.configuration.prefix.symbol) + \(PhysicalKeys.labels[model.selectedKey] ?? "") · 启动 / 显示 / 隐藏")
+                    Text("绑定应用或应用功能").font(.headline)
+                    Text("\(model.configuration.prefix.symbol) + \(PhysicalKeys.labels[model.selectedKey] ?? "") · \(draft.isFunction ? "执行应用功能" : "启动 / 显示 / 隐藏")")
                         .font(.subheadline).foregroundStyle(.secondary)
                 }
                 Spacer()
                 Button { model.sheet = nil } label: { Image(systemName: "xmark") }.buttonStyle(.plain).accessibilityLabel("关闭应用选择")
             }
-            TextField("搜索应用名称…", text: $search).textFieldStyle(.roundedBorder).focused($searchFocused)
-            if let message = model.errorMessage {
-                Text(message).font(.caption).foregroundStyle(.orange).lineLimit(2)
-            }
-            ScrollView {
-                LazyVStack(spacing: 3) {
-                    ForEach(filtered) { app in
-                        Button { model.assign(app) } label: {
-                            HStack(spacing: 12) {
-                                Image(nsImage: catalog.icon(at: app.url.path)).resizable().frame(width: 32, height: 32)
-                                VStack(alignment: .leading, spacing: 3) {
-                                    Text(app.name).font(.system(size: 13, weight: .medium))
-                                    Text(app.url.path).font(.system(size: 10)).foregroundStyle(.secondary).lineLimit(1).truncationMode(.middle)
-                                }
-                                Spacer()
-                                if model.binding(for: model.selectedKey)?.path == app.url.path {
-                                    Image(systemName: "checkmark.circle.fill").foregroundStyle(Color.accentColor)
-                                }
-                            }.padding(9).frame(maxWidth: .infinity, alignment: .leading)
-                                .background(.primary.opacity(0.035), in: RoundedRectangle(cornerRadius: 8)).contentShape(Rectangle())
-                        }.buttonStyle(.plain).accessibilityLabel("绑定 \(app.name)")
-                    }
-                    if filtered.isEmpty {
-                        VStack(spacing: 10) {
-                            if catalog.isLoading { ProgressView().controlSize(.small) }
-                            Text(catalog.isLoading ? "正在查找本机应用…" : "没有找到应用，可从文件中选择。")
-                                .font(.subheadline).foregroundStyle(.secondary)
-                        }.frame(maxWidth: .infinity).padding(.top, 70)
+            Picker("绑定类型", selection: $draft.isFunction) {
+                Text("应用 · 唤起 / 隐藏").tag(false)
+                Text("应用功能").tag(true)
+            }.pickerStyle(.segmented)
+            if draft.isFunction, let app = draft.app {
+                FunctionPickerView(model: model, draft: draft, app: app)
+            } else {
+                TextField("搜索应用名称…", text: $search).textFieldStyle(.roundedBorder).focused($searchFocused)
+                if let message = model.errorMessage {
+                    Text(message).font(.caption).foregroundStyle(.orange).lineLimit(2)
+                }
+                ScrollView {
+                    LazyVStack(spacing: 3) {
+                        ForEach(filtered) { app in
+                            Button { select(app) } label: {
+                                HStack(spacing: 12) {
+                                    Image(nsImage: catalog.icon(at: app.url.path)).resizable().frame(width: 32, height: 32)
+                                    VStack(alignment: .leading, spacing: 3) {
+                                        Text(app.name).font(.system(size: 13, weight: .medium))
+                                        Text(app.url.path).font(.system(size: 10)).foregroundStyle(.secondary).lineLimit(1).truncationMode(.middle)
+                                    }
+                                    Spacer()
+                                    if model.binding(for: model.selectedKey)?.path == app.url.path {
+                                        Image(systemName: "checkmark.circle.fill").foregroundStyle(Color.accentColor)
+                                    }
+                                }.padding(9).frame(maxWidth: .infinity, alignment: .leading)
+                                    .background(.primary.opacity(0.035), in: RoundedRectangle(cornerRadius: 8)).contentShape(Rectangle())
+                            }.buttonStyle(.plain).accessibilityLabel("绑定 \(app.name)")
+                        }
+                        if filtered.isEmpty {
+                            VStack(spacing: 10) {
+                                if catalog.isLoading { ProgressView().controlSize(.small) }
+                                Text(catalog.isLoading ? "正在查找本机应用…" : "没有找到应用，可从文件中选择。")
+                                    .font(.subheadline).foregroundStyle(.secondary)
+                            }.frame(maxWidth: .infinity).padding(.top, 70)
+                        }
                     }
                 }
             }
@@ -68,8 +77,11 @@ struct AppPickerView: View {
                 Button("取消") { model.sheet = nil }.keyboardShortcut(.cancelAction)
             }
         }
-        .padding(24).frame(width: 540, height: 510)
+        .padding(24).frame(width: 600, height: 640)
         .onAppear { searchFocused = true }
+    }
+    private func select(_ app: CatalogApp) {
+        if draft.isFunction { draft.selectApp(app) } else { model.assign(app) }
     }
     private func chooseFile() {
         let panel = NSOpenPanel()
@@ -84,7 +96,7 @@ struct AppPickerView: View {
             guard let app = ApplicationCatalog.application(at: url), app.bundleIdentifier != Bundle.main.bundleIdentifier else {
                 model.errorMessage = "请选择一个有效的其他应用。"; return
             }
-            model.assign(app)
+            select(app)
         }
     }
 }

@@ -117,6 +117,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
         model.isPanelVisible = true
         panel.makeKeyAndOrderFront(nil)
+        if model.resumeFunctionEditor {
+            model.resumeFunctionEditor = false
+            model.isEditing = true
+            model.sheet = .appPicker
+        }
     }
 
     private func hidePanel() {

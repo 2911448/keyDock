@@ -3,6 +3,7 @@ import ApplicationServices
 import KeyDockCore
 
 final class KeyboardMonitor {
+    var onRecordKeyDown: ((UInt16, KeyModifiers) -> Void)?
     var onKeyDown: ((UInt16, KeyModifiers, Bool) -> Bool)?
     var onSummon: (() -> Void)?
     var onStatus: ((Bool, String) -> Void)?
@@ -40,6 +41,7 @@ final class KeyboardMonitor {
     func start() {
         localMonitor = NSEvent.addLocalMonitorForEvents(matching: [.keyDown, .keyUp]) { [weak self] event in
             guard let self else { return event }
+            if event.cgEvent?.getIntegerValueField(.eventSourceUserData) == FunctionExecutor.eventTag { return event }
             if event.type == .keyUp {
                 return self.localCapturedKeys.remove(event.keyCode) != nil ? nil : event
             }
@@ -47,6 +49,11 @@ final class KeyboardMonitor {
                 if event.isARepeat { return nil }
                 // Launching another app can send the previous key-up to its window instead.
                 self.localCapturedKeys.remove(event.keyCode)
+            }
+            if let recorder = self.onRecordKeyDown {
+                if !event.isARepeat { recorder(event.keyCode, Self.modifiers(event.modifierFlags)) }
+                self.localCapturedKeys.insert(event.keyCode)
+                return nil
             }
             let handled = self.onKeyDown?(event.keyCode, Self.modifiers(event.modifierFlags), event.isARepeat) ?? false
             if handled { self.localCapturedKeys.insert(event.keyCode) }
@@ -135,6 +142,7 @@ final class KeyboardMonitor {
             if let tap { CGEvent.tapEnable(tap: tap, enable: true) }
             return Unmanaged.passUnretained(event)
         }
+        if event.getIntegerValueField(.eventSourceUserData) == FunctionExecutor.eventTag { return Unmanaged.passUnretained(event) }
         let code = UInt16(event.getIntegerValueField(.keyboardEventKeycode))
         eventCount += 1
         let modifiers = Self.modifiers(NSEvent.ModifierFlags(rawValue: UInt(event.flags.rawValue)))
@@ -159,6 +167,11 @@ final class KeyboardMonitor {
                 if repeated { return nil }
                 // A fresh down is a new press, even if sleep/secure input dropped its earlier up.
                 capturedKeys.remove(code)
+            }
+            if let recorder = onRecordKeyDown {
+                capturedKeys.insert(code)
+                if !repeated { recorder(code, modifiers) }
+                return nil
             }
             if onKeyDown?(code, modifiers, repeated) == true { capturedKeys.insert(code); return nil }
         } else if type == .keyUp {
