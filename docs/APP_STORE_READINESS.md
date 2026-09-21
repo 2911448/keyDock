@@ -1,6 +1,6 @@
 # KeyDock 商店发布记录
 
-更新：2026-09-21。分支：`feat/app-store`。版本：1.2.0（build 7）。**尚未上传、提交审核或公开发布。**
+更新：2026-09-21。分支：`feat/app-store`。版本：1.2.0（build 7）。**已上传至 App Store Connect，Apple 处理中；尚未提交审核或公开发布。**
 
 ## 已完成
 
@@ -11,7 +11,7 @@
 - 独立沙盒配置、Xcode 工程与共享 scheme、归档/导出脚本、应用图标、PrivacyInfo.xcprivacy 和 App 内隐私政策。
 - 配置使用 v4，安全作用域书签支持手选 App。含旧应用功能的配置明确拒绝并保留原文件，普通旧格式保存前备份。
 - `./scripts/test.sh`：21 项测试通过，包括冲突不误报成功、未注册键不触发、长按一次、暂停释放、恢复和配置变化、旧配置保护、书签往返、真实隐藏状态判断、窗口行为。
-- 本地 Xcode archive 成功（unsigned 与团队开发签名归档均完成）。本机工具链为 Xcode 27.0 / 27A5237l；上架前仍需核对 Apple 接受的正式工具链。
+- 本地 Xcode archive 成功（unsigned 与团队开发签名归档均完成）。已于 2026-09-21 使用正式版 Xcode 27.0（27A266a）、SDK 26A425 重新归档，产物工具链字段已核对；21 项测试重新通过。
 - 沙盒预览独立 Bundle ID：`io.keydock.app.storepreview`。签名权限与二进制检查通过：app-sandbox=true，无 AXUIElement / AXIsProcessTrusted / CGEventTapCreate / CGEventPost 链接，无 Apple Events 或临时例外 entitlement。
 - 实机预览：无辅助功能授权提示；应用列表可读、搜索并保存 K→计算器、完成编辑后注册两个热键成功，鼠标调用后最近操作显示“已打开 / 显示 计算器”。预览配置在独立容器中保存，重启后 K→计算器绑定恢复。编辑状态明确显示暂停，不再误报注册冲突；键盘布局已检查。验证结束已退出预览版。
 - 原本机 `dist/KeyDock.app` 1.1.0 及个人配置未覆盖。当前预览中的 K→计算器是测试配置，不是首次安装预设。
@@ -23,16 +23,16 @@ Xcode 登录后，原先的 `No Accounts`、安装包发行证书和描述文件
 - `xcodebuild -exportArchive` 导出成功：`dist/store/export/KeyDock.pkg`。
 - `pkgutil --check-signature` 验证签名链通过，安装包使用团队 `R97G9N5UN7` 的 Mac Developer Installer 发行证书签名。
 - 首次命令行上传因 App Store Connect 缺少 `io.keydock.app` 的应用记录而失败。
-- 已通过 Xcode Organizer 创建 KeyDock 应用记录：Bundle ID 和 SKU 均为 `io.keydock.app`，主语言为简体中文。随后上传失败，未产生可用商店构建。
+- 已通过 Xcode Organizer 创建 KeyDock 应用记录：Bundle ID 和 SKU 均为 `io.keydock.app`，主语言为简体中文。首次 beta 归档上传失败；正式版归档重传结果如下。
 - Apple 实际拒绝本次 Xcode 27 beta 5（27A5237l）构建：`This bundle is invalid. Apple is not currently accepting applications built with this version of Xcode.`
-- 下一步必须安装 Apple 接受的正式版 Xcode，重新归档并上传；不能仅用新工具重新导出旧 beta 归档，也不能修改归档内工具链版本字段绕过校验。
-- Organizer 中的 `KeyDock 1.2.0 (7)` 是失败归档记录；不代表 TestFlight 可用或审核已提交。
+- 正式版 Xcode 27.0（27A266a）已安装；重新编译归档、沙盒校验、导出与安装包签名链验证均通过。于 2026-09-21 18:01（Asia/Shanghai）通过命令行上传成功：`Upload succeeded`、`Uploaded KeyDock`、`EXPORT SUCCEEDED`。最终上传状态为 `Uploaded package is processing`；尚未确认 TestFlight 可用。
+- Organizer 先前导入的是 beta 失败归档，未用它重传。本次上传直接使用重新生成的 `dist/store/KeyDock.xcarchive`，已核对 DTXcodeBuild=27A266a、DTSDKBuild=26A425。
 
 ## 恢复发布步骤
 
-1. 账号、团队、应用记录和导出签名已打通；当前阻碍是 Apple 拒绝 beta 工具链构建。
-2. 选择 Apple 当前接受的 Xcode/SDK，运行 `scripts/store/build.sh archive` 和 `export`。见 README 的环境变量说明。
-3. 补齐 [商店资料](store/metadata-zh-Hans.md)：开发者/版权名称、支持邮箱或网址、定价、销售地区、隐私政策公开 URL。当前草稿不可直接提交。
+1. 账号、团队、应用记录、正式工具链及上传已完成；在 App Store Connect 确认 Apple 处理结果，处理通过后再安排 TestFlight。
+2. 后续重建使用 `DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer`，运行归档/导出脚本。系统 xcode-select 仍指向 CommandLineTools，本次没有修改全局选择。
+3. 补齐 [商店资料](store/metadata-zh-Hans.md)：开发者/版权名称、支持邮箱或网址、定价、销售地区、隐私政策公开 URL。这些信息已询问用户，尚待回复；当前草稿不可直接提交。
 4. 完成下述实体环境验证与最终截图，完成 App Store Connect 上传校验、TestFlight、问卷和审核备注。默认建议手动发布；不把上传成功等同于上架。
 
 ## 未完成的功能验收
