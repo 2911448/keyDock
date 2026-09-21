@@ -1,0 +1,9 @@
+# keyDock application icon
+
+Generated on 2026-09-21 using the built-in image generation tool (imagegen skill), at the user's request to use Image 2. The tool does not expose a model selector. Source output is preserved unchanged in `keydock-generated-source.png`.
+
+The application uses `../KeyDock-Generated.icns`; the previous placeholder `../KeyDock.icns` remains preserved. Run `scripts/store/make-generated-icon.sh` from the repository root to reproduce all macOS icon sizes with sips and iconutil. This only resizes and packages the source; it does not redraw it.
+
+## Generation prompt
+
+Use case: logo-brand. Create ONE final production-quality macOS application icon for keyDock, a minimal keyboard shortcut launcher and app switcher. Square 1024x1024 composition. A bold, simple, sculpted ivory keyboard keycap centered over a deep charcoal rounded-square app tile, with a distinctive dark capital K engraved on the keycap. A tiny dock-like row of exactly three rounded app tiles in restrained blue, mint, and warm orange is tucked beneath the lower edge of the keycap, conveying apps docked to a keyboard key. Refined native Mac app icon craft: gently beveled edges, subtle tactile ceramic/aluminum material, soft controlled studio lighting from upper left, crisp silhouette, restrained depth, strong contrast and generous negative space. Front-facing with very slight top-down perspective, not an isometric scene. Main keycap occupies about 65% of icon tile. Balanced optical weight, elegant and memorable, reads cleanly at 32px. Outer rounded-square tile occupies about 88% of canvas width, centered, with real transparent space outside its boundary (not checkerboard pattern). No scene, no desk, no device, no extra keyboard, no additional typography other than a single exact capital K, no app name, no watermark, no border frame, no mockup presentation. Deliver a single icon only, not variations or a contact sheet.

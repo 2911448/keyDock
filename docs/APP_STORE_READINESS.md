@@ -1,8 +1,10 @@
 # KeyDock 商店发布记录
 
-更新：2026-09-21。分支：`feat/app-store`。版本：1.2.0（build 7）。**已上传至 App Store Connect，Apple 处理中；尚未提交审核或公开发布。**
+更新：2026-09-21。分支：`feat/app-store`。版本：1.2.0（build 8）。**已上传至 App Store Connect，Apple 处理中；尚未提交审核或公开发布。**
 
 ## 已完成
+
+- 2026-09-21：生成 K 键帽应用图标，保留原始 PNG 及生成提示词，产出全部 macOS 图标尺寸并接入 Xcode。build 8 已归档、图标/沙盒检查通过，于 18:17（Asia/Shanghai）上传成功；Apple 处理中。旧版图标文件保留。
 
 - 从 1.1.0 基线新建商店分支；移除应用功能绑定的界面、菜单遍历、AX 点击、快捷键录制与模拟发送代码。
 - 普通 App 绑定保留。隐藏仅使用 NSRunningApplication，不使用 AX 回退；系统未实际隐藏时报告失败。
@@ -33,7 +35,7 @@ Xcode 登录后，原先的 `No Accounts`、安装包发行证书和描述文件
 1. 账号、团队、应用记录、正式工具链及上传已完成；在 App Store Connect 确认 Apple 处理结果，处理通过后再安排 TestFlight。
 2. 后续重建使用 `DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer`，运行归档/导出脚本。系统 xcode-select 仍指向 CommandLineTools，本次没有修改全局选择。
 3. 用户已确认名称 `keyDock`、免费及邮箱 `xin2911448@icloud.com`；版权资料整理为 `2026 keyDock`。销售地区待确认。
-4. [隐私政策](https://github.com/2911448/keyDock/blob/feat/app-store/docs/store/privacy-policy.md)与[支持页面](https://github.com/2911448/keyDock/blob/feat/app-store/docs/store/support.md)已推送到公开 GitHub 仓库，并验证无需登录可读取。名称、价格、邮箱与链接目前仅已整理到[商店资料](store/metadata-zh-Hans.md)，尚未写入 Apple 后台；Safari 的 App Store Connect 仍在登录页，等待用户完成网页登录。
+4. [隐私政策](https://github.com/2911448/keyDock/blob/feat/app-store/docs/store/privacy-policy.md)与[支持页面](https://github.com/2911448/keyDock/blob/feat/app-store/docs/store/support.md)已推送到公开 GitHub 仓库，并验证无需登录可读取。Safari 已登录；名称、副标题、效率分类及隐私政策 URL 已保存，版本描述、支持 URL、版权、审核备注和审核联系信息已填写保存。私人审核电话仅填写至 Apple，不记录到公开仓库。隐私问卷已保存为“不收集数据”，最终发布声明等待用户确认。免费价格已在 App Store Connect 保存；当前价格明细已核对为 $0.00 及对应地区的零元价格。销售地区尚未设置。
 5. 完成下述实体环境验证与最终截图，完成 App Store Connect 上传校验、TestFlight、问卷和审核备注。默认建议手动发布；不把上传成功等同于上架。
 
 ## 未完成的功能验收

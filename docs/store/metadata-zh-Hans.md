@@ -1,13 +1,13 @@
 # App Store Connect 文案草稿
 
-状态：已创建 KeyDock 商店记录（io.keydock.app，主语言简体中文），已使用正式版 Xcode 上传 1.2.0（7），Apple 处理中，尚未提交审核。用户已确认名称 keyDock、免费和联系邮箱；销售地区待确认。GitHub 隐私及支持页面已公开发布并验证无需登录可读取。以下名称、价格及联系信息已整理，但尚未写入 App Store Connect，等待网页端登录。
+状态：已创建 KeyDock 商店记录（io.keydock.app，主语言简体中文），已使用正式版 Xcode 上传含新图标的 1.2.0（8），Apple 处理中，尚未提交审核。用户已确认名称 keyDock、免费和联系邮箱；销售地区待确认。GitHub 隐私及支持页面已公开发布并验证无需登录可读取。名称、副标题、效率分类、隐私政策 URL 已保存到 App Store Connect。版本描述、支持 URL、版权、审核备注及用户提供的审核联系信息已填写保存；私人审核电话不写入仓库。免费价格已在 App Store Connect 保存；当前价格明细已核对为 $0.00 及对应地区的零元价格。销售地区尚未设置。隐私问卷已保存为“不收集数据”，发布声明等待用户确认。
 
 - 名称：keyDock
 - 副标题：把常用应用放到键盘上
 - 分类：效率
 - 关键词：快捷键,启动器,键盘,应用切换,菜单栏,效率
 - 平台：macOS 14+，Apple Silicon
-- 版本：1.2.0（build 7，已于 2026-09-21 上传）
+- 版本：1.2.0（build 8，含新图标，已于 2026-09-21 上传）
 - 隐私政策 URL：https://github.com/2911448/keyDock/blob/feat/app-store/docs/store/privacy-policy.md
 - 支持 URL：https://github.com/2911448/keyDock/blob/feat/app-store/docs/store/support.md
 - 支持及隐私联系邮箱：xin2911448@icloud.com

@@ -16,7 +16,9 @@ assert permissions.get('com.apple.security.app-sandbox') is True, 'Sandbox missi
 assert not permissions.get('com.apple.security.get-task-allow'), 'Debug entitlement in release'
 assert not any('temporary-exception' in k or 'apple-events' in k for k in permissions), 'Unexpected automation entitlement'
 assert not any(permissions.get(k) for k in ['com.apple.security.network.client','com.apple.security.network.server']), 'Unexpected network access'
-assert (app/'Contents/Resources/KeyDock.icns').is_file(), 'Icon missing'
+icon = info['CFBundleIconFile']
+icon = icon if icon.endswith('.icns') else icon + '.icns'
+assert (app/'Contents/Resources'/icon).is_file(), 'Icon missing'
 privacy=plistlib.loads((app/'Contents/Resources/PrivacyInfo.xcprivacy').read_bytes())
 assert privacy['NSPrivacyTracking'] is False
 binary=app/'Contents/MacOS'/info['CFBundleExecutable']

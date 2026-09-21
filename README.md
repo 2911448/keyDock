@@ -2,7 +2,7 @@
 
 把常用 Mac 应用放到键盘上，通过组合键或键盘面板快速调用。
 
-本分支 `feat/app-store` 是 1.2.0（build 7）的商店适配版本。完整版本保留在 `feat/keydock`。当前已完成本地沙盒预览、Xcode 归档和自动检查，**尚未提交商店审核**。当前发行阻碍及实测范围见 [发布记录](docs/APP_STORE_READINESS.md)。
+本分支 `feat/app-store` 是 1.2.0（build 8）的商店适配版本。完整版本保留在 `feat/keydock`。当前已完成本地沙盒预览、Xcode 归档和自动检查，**尚未提交商店审核**。当前发行阻碍及实测范围见 [发布记录](docs/APP_STORE_READINESS.md)。
 
 ## 商店版功能
 

@@ -17,7 +17,7 @@ for path in sorted((root/'Sources/KeyDock').glob('*.swift')):
     ref=obj(relative,'PBXFileReference',lastKnownFileType='sourcecode.swift',path=relative,sourceTree='<group>')
     files.append(ref); sources.append(obj(relative+' build','PBXBuildFile',fileRef=ref))
 resources=[]
-for path,kind in [('Resources/KeyDock.icns','image.icns'),('Resources/PrivacyInfo.xcprivacy','text.xml')]:
+for path,kind in [('Resources/KeyDock-Generated.icns','image.icns'),('Resources/PrivacyInfo.xcprivacy','text.xml')]:
     ref=obj(path,'PBXFileReference',lastKnownFileType=kind,path=path,sourceTree='<group>')
     files.append(ref); resources.append(obj(path+' build','PBXBuildFile',fileRef=ref))
 product=obj('product','PBXFileReference',explicitFileType='wrapper.application',includeInIndex=0,path='KeyDock.app',sourceTree='BUILT_PRODUCTS_DIR')
