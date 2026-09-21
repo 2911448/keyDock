@@ -16,22 +16,24 @@
 - 实机预览：无辅助功能授权提示；应用列表可读、搜索并保存 K→计算器、完成编辑后注册两个热键成功，鼠标调用后最近操作显示“已打开 / 显示 计算器”。预览配置在独立容器中保存，重启后 K→计算器绑定恢复。编辑状态明确显示暂停，不再误报注册冲突；键盘布局已检查。验证结束已退出预览版。
 - 原本机 `dist/KeyDock.app` 1.1.0 及个人配置未覆盖。当前预览中的 K→计算器是测试配置，不是首次安装预设。
 
-## 导出阻碍（实际尝试结果）
+## 导出与上传进度（实际尝试结果）
 
-`xcodebuild -exportArchive` 返回：
+Xcode 登录后，原先的 `No Accounts`、安装包发行证书和描述文件缺失问题已解决。
 
-- `No Accounts`：Xcode 未配置可用的开发者账号。
-- `No signing certificate "Mac Installer Distribution" found`：缺少团队安装包发行证书及私钥。
-- `No profiles for 'io.keydock.app' were found`：缺少此 Bundle ID 的 Mac App Store 描述文件。
-
-本机 Apple Distribution 证书本身不能替代上述账号、安装包签名和配置文件。请在 Xcode Settings → Accounts 登录付费开发者账号，再检查团队、Bundle ID 所属和证书。无需向聊天发送密码、验证码或私钥。
+- `xcodebuild -exportArchive` 导出成功：`dist/store/export/KeyDock.pkg`。
+- `pkgutil --check-signature` 验证签名链通过，安装包使用团队 `R97G9N5UN7` 的 Mac Developer Installer 发行证书签名。
+- 首次命令行上传因 App Store Connect 缺少 `io.keydock.app` 的应用记录而失败。
+- 已通过 Xcode Organizer 创建 KeyDock 应用记录：Bundle ID 和 SKU 均为 `io.keydock.app`，主语言为简体中文。随后上传失败，未产生可用商店构建。
+- Apple 实际拒绝本次 Xcode 27 beta 5（27A5237l）构建：`This bundle is invalid. Apple is not currently accepting applications built with this version of Xcode.`
+- 下一步必须安装 Apple 接受的正式版 Xcode，重新归档并上传；不能仅用新工具重新导出旧 beta 归档，也不能修改归档内工具链版本字段绕过校验。
+- Organizer 中的 `KeyDock 1.2.0 (7)` 是失败归档记录；不代表 TestFlight 可用或审核已提交。
 
 ## 恢复发布步骤
 
-1. Xcode 登录完成；确认该团队可使用 `io.keydock.app`，签发/下载商店描述文件及所需发行证书。
+1. 账号、团队、应用记录和导出签名已打通；当前阻碍是 Apple 拒绝 beta 工具链构建。
 2. 选择 Apple 当前接受的 Xcode/SDK，运行 `scripts/store/build.sh archive` 和 `export`。见 README 的环境变量说明。
 3. 补齐 [商店资料](store/metadata-zh-Hans.md)：开发者/版权名称、支持邮箱或网址、定价、销售地区、隐私政策公开 URL。当前草稿不可直接提交。
-4. 完成下述实体环境验证与最终截图，再建立/选择 App Store Connect 记录，上传校验、TestFlight、问卷和审核备注。默认建议手动发布；不把上传成功等同于上架。
+4. 完成下述实体环境验证与最终截图，完成 App Store Connect 上传校验、TestFlight、问卷和审核备注。默认建议手动发布；不把上传成功等同于上架。
 
 ## 未完成的功能验收
 
