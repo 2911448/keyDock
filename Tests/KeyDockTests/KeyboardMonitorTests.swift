@@ -1,114 +1,93 @@
 import XCTest
-import CoreGraphics
+import AppKit
+import Carbon
 import KeyDockCore
 @testable import KeyDock
 
-/// Construct events but never post them to the system or install an event tap.
+private final class FakeRegistrar: HotKeyRegistrar {
+    var keys: [UInt32: (UInt16, Modifier)] = [:]
+    var conflicts = Set<UInt32>()
+    var installResult: OSStatus = noErr
+    func start(_ receive: @escaping (UInt32, Bool) -> Void) -> OSStatus { installResult }
+    func register(id: UInt32, key: UInt16, modifier: Modifier) -> OSStatus {
+        if conflicts.contains(id) { return OSStatus(eventHotKeyExistsErr) }
+        keys[id] = (key, modifier)
+        return noErr
+    }
+    func unregisterAll() { keys.removeAll() }
+}
+
 final class KeyboardMonitorTests: XCTestCase {
-    func testAXSnapshotFalseStillAttemptsActualEventTapAndReportsFailureHonestly() {
-        var attempts = 0
-        var active = true
-        let monitor = KeyboardMonitor(accessibilityTrusted: { false }, createTap: { _, _ in attempts += 1; return nil })
-        monitor.onStatus = { enabled, _ in active = enabled }
-        monitor.refresh()
-        XCTAssertEqual(attempts, 1)
-        XCTAssertFalse(active)
-        monitor.retry()
-        XCTAssertEqual(attempts, 2)
-        XCTAssertFalse(active)
+    private func config() -> Configuration {
+        var c = Configuration()
+        c.bindings = [AppBinding(keyCode: 0, bundleIdentifier: nil, path: "/A.app", name: "A")]
+        return c
     }
-
-    func testAuthorizationSnapshotTrueDoesNotMeanTapSucceeded() {
-        var active = true
-        let monitor = KeyboardMonitor(accessibilityTrusted: { true }, createTap: { _, _ in nil })
-        monitor.onStatus = { enabled, _ in active = enabled }
-        monitor.refresh()
-        XCTAssertFalse(active)
+    func testOnlyBoundKeysAndSummonRegisterAndPrefixChangesImmediately() {
+        let registrar = FakeRegistrar()
+        let subject = KeyboardMonitor(registrar: registrar)
+        var c = config()
+        subject.configure(c); subject.start()
+        XCTAssertEqual(Set(registrar.keys.keys), [0, 1])
+        XCTAssertEqual(registrar.keys[0]?.0, 49)
+        XCTAssertEqual(registrar.keys[1]?.1, .control)
+        c.prefix = .command
+        subject.configure(c)
+        XCTAssertEqual(registrar.keys[1]?.1, .command)
+        c.bindings = []
+        subject.configure(c)
+        XCTAssertEqual(Set(registrar.keys.keys), [0])
     }
-
-    private func event(_ type: CGEventType, code: UInt16, flags: CGEventFlags = [], time: Double = 0, repeatKey: Bool = false) -> CGEvent {
-        let event = CGEvent(keyboardEventSource: nil, virtualKey: code, keyDown: type != .keyUp)!
-        event.type = type
-        event.flags = flags
-        event.timestamp = UInt64(time * 1_000_000_000)
-        event.setIntegerValueField(.keyboardEventAutorepeat, value: repeatKey ? 1 : 0)
-        return event
-    }
-    @discardableResult private func send(_ monitor: KeyboardMonitor, _ type: CGEventType, code: UInt16,
-                                         flags: CGEventFlags = [], time: Double = 0, repeatKey: Bool = false) -> Bool {
-        monitor.receive(type: type, event: event(type, code: code, flags: flags, time: time, repeatKey: repeatKey)) == nil
-    }
-
-    func testCapturedChordSwallowsRepeatAndMatchingKeyUpOnly() {
-        let monitor = KeyboardMonitor()
-        var deliveries: [UInt16] = []
-        monitor.onKeyDown = { code, flags, repeated in
-            deliveries.append(code)
-            return code == 0 && flags == .control && !repeated
+    func testHoldDispatchesOnceAndReleaseAllowsNextPress() {
+        let subject = KeyboardMonitor(registrar: FakeRegistrar())
+        subject.configure(config()); subject.start()
+        var calls = 0
+        subject.onKeyDown = { key, flags, repeated in
+            XCTAssertEqual(key, 0); XCTAssertEqual(flags, .control); XCTAssertFalse(repeated)
+            calls += 1; return true
         }
-        XCTAssertTrue(send(monitor, .keyDown, code: 0, flags: .maskControl))
-        XCTAssertTrue(send(monitor, .keyDown, code: 0, flags: .maskControl, repeatKey: true))
-        XCTAssertTrue(send(monitor, .keyUp, code: 0)) // still consumed after Control is released
-        XCTAssertFalse(send(monitor, .keyDown, code: 1, flags: .maskControl))
-        XCTAssertFalse(send(monitor, .keyUp, code: 1))
-        XCTAssertEqual(deliveries, [0, 1])
-        XCTAssertTrue(send(monitor, .keyDown, code: 0, flags: .maskControl)) // no sticky capture
-        XCTAssertEqual(deliveries, [0, 1, 0])
+        subject.receive(id: 1, down: true); subject.receive(id: 1, down: true)
+        subject.receive(id: 88, down: true)
+        XCTAssertEqual(calls, 1)
+        subject.receive(id: 1, down: false); subject.receive(id: 1, down: true)
+        XCTAssertEqual(calls, 2)
     }
-
-    func testRealModifierEventSequenceAndInterveningChord() {
-        let monitor = KeyboardMonitor()
-        var summons = 0
-        monitor.onSummon = { summons += 1 }
-        send(monitor, .flagsChanged, code: 59, flags: .maskControl, time: 0)
-        send(monitor, .flagsChanged, code: 59, time: 0.05)
-        send(monitor, .flagsChanged, code: 59, flags: .maskControl, time: 0.1)
-        send(monitor, .flagsChanged, code: 59, time: 0.15)
-        XCTAssertEqual(summons, 1)
-        send(monitor, .flagsChanged, code: 59, flags: .maskControl, time: 0.3)
-        send(monitor, .keyDown, code: 0, flags: .maskControl, time: 0.32)
-        send(monitor, .flagsChanged, code: 59, time: 0.35)
-        send(monitor, .flagsChanged, code: 59, flags: .maskControl, time: 0.4)
-        send(monitor, .flagsChanged, code: 59, time: 0.45)
-        XCTAssertEqual(summons, 1)
-    }
-
-    func testMissingKeyUpDoesNotSwallowNextFreshPress() {
-        let monitor = KeyboardMonitor()
-        var deliveries = 0
-        monitor.onKeyDown = { _, _, _ in deliveries += 1; return true }
-        XCTAssertTrue(send(monitor, .keyDown, code: 0, flags: .maskControl))
-        // The event tap may miss key-up during secure input or a session transition.
-        XCTAssertTrue(send(monitor, .keyDown, code: 0, flags: .maskControl))
-        XCTAssertEqual(deliveries, 2)
-    }
-
-    func testTwoControlKeysHeldTogetherCannotBecomeDoubleTap() {
-        let monitor = KeyboardMonitor()
-        var summons = 0
-        monitor.onSummon = { summons += 1 }
-        send(monitor, .flagsChanged, code: 59, flags: .maskControl, time: 0)
-        send(monitor, .flagsChanged, code: 62, flags: .maskControl, time: 0.05)
-        send(monitor, .flagsChanged, code: 59, flags: .maskControl, time: 0.1)
-        send(monitor, .flagsChanged, code: 62, time: 0.15)
-        XCTAssertEqual(summons, 0)
-    }
-
-    func testDisabledGesturesStillDetectGlobeAndCapsLockDoesNotChangeChord() {
-        let monitor = KeyboardMonitor()
+    func testPauseAndEditingReleaseChordsAndResumeClearsHeldState() {
+        let registrar = FakeRegistrar()
+        let monitor = KeyboardMonitor(registrar: registrar)
+        monitor.configure(config()); monitor.start()
+        var calls = 0
+        monitor.onSummon = { calls += 1 }
+        monitor.receive(id: 0, down: true)
         monitor.gesturesEnabled = false
-        var summons = 0
-        var globeEvents = 0
-        monitor.onSummon = { summons += 1 }
-        monitor.onGlobe = { globeEvents += 1 }
-        for time in [0.0, 0.15] {
-            send(monitor, .flagsChanged, code: 59, flags: .maskControl, time: time)
-            send(monitor, .flagsChanged, code: 59, time: time + 0.05)
-        }
-        send(monitor, .flagsChanged, code: 63, flags: .maskSecondaryFn, time: 0.3)
-        XCTAssertEqual(summons, 0)
-        XCTAssertEqual(globeEvents, 1)
-        monitor.onKeyDown = { _, flags, _ in flags == .control }
-        XCTAssertTrue(send(monitor, .keyDown, code: 0, flags: [.maskControl, .maskAlphaShift]))
+        XCTAssertTrue(registrar.keys.isEmpty)
+        monitor.receive(id: 0, down: true)
+        XCTAssertEqual(calls, 1)
+        monitor.gesturesEnabled = true
+        monitor.receive(id: 0, down: true)
+        XCTAssertEqual(calls, 2)
+    }
+    func testConflictDoesNotClaimSuccessOrDisableWorkingChords() {
+        let registrar = FakeRegistrar(); registrar.conflicts = [0]
+        let subject = KeyboardMonitor(registrar: registrar)
+        subject.configure(config())
+        var active = true, status = "", calls = 0
+        subject.onStatus = { active = $0; status = $1 }
+        subject.onKeyDown = { _, _, _ in calls += 1; return true }
+        subject.onSummon = { XCTFail("Unregistered summon cannot dispatch") }
+        subject.start()
+        XCTAssertFalse(active); XCTAssertTrue(status.contains("空格"))
+        subject.receive(id: 0, down: true); subject.receive(id: 1, down: true)
+        XCTAssertEqual(calls, 1)
+        registrar.conflicts = []; subject.retry()
+        XCTAssertTrue(active)
+    }
+    func testHandlerInstallFailureDoesNotRegisterKeys() {
+        let registrar = FakeRegistrar(); registrar.installResult = OSStatus(paramErr)
+        let subject = KeyboardMonitor(registrar: registrar)
+        var active = true
+        subject.onStatus = { active = $0; _ = $1 }
+        subject.start()
+        XCTAssertFalse(active); XCTAssertTrue(registrar.keys.isEmpty)
     }
 }

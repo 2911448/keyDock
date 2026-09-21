@@ -2,37 +2,6 @@ import XCTest
 @testable import KeyDockCore
 
 final class InteractionTests: XCTestCase {
-    func testTwoCompleteQuickTapsTriggerOnce() {
-        var recognizer = DoubleTapRecognizer()
-        recognizer.press(at: 0)
-        XCTAssertFalse(recognizer.release(at: 0.05))
-        recognizer.press(at: 0.18)
-        XCTAssertTrue(recognizer.release(at: 0.23))
-        XCTAssertFalse(recognizer.release(at: 0.24))
-    }
-    func testSlowTapsAndLongHoldsDoNotTrigger() {
-        var recognizer = DoubleTapRecognizer()
-        recognizer.press(at: 0)
-        XCTAssertFalse(recognizer.release(at: 0.1))
-        recognizer.press(at: 0.6)
-        XCTAssertFalse(recognizer.release(at: 0.7))
-        recognizer.press(at: 0.8)
-        XCTAssertFalse(recognizer.release(at: 1.3))
-    }
-    func testChordOrFocusResetCancelsDoubleTap() {
-        var recognizer = DoubleTapRecognizer()
-        recognizer.press(at: 0)
-        XCTAssertFalse(recognizer.release(at: 0.05))
-        recognizer.reset()
-        recognizer.press(at: 0.1)
-        XCTAssertFalse(recognizer.release(at: 0.15))
-    }
-    func testRepeatedModifierDownDoesNotTrigger() {
-        var recognizer = DoubleTapRecognizer()
-        recognizer.press(at: 0)
-        recognizer.press(at: 0.1)
-        XCTAssertFalse(recognizer.release(at: 0.2))
-    }
     func testPanelSnapshotDrivesToggleEvenWhenPanelHasFocus() {
         XCTAssertEqual(ApplicationAction.decide(isRunning: false, isHidden: false, wasFrontmost: false), .launch)
         XCTAssertEqual(ApplicationAction.decide(isRunning: true, isHidden: false, wasFrontmost: false), .activate)
@@ -50,8 +19,8 @@ final class InteractionTests: XCTestCase {
         XCTAssertFalse(match(0, [.control, .shift]))
         XCTAssertFalse(match(0, .control, paused: true))
         XCTAssertFalse(match(0, .control, editing: true))
-        config.prefix = .function
+        config.prefix = .option
         XCTAssertFalse(match(0, .control))
-        XCTAssertTrue(match(0, .function))
+        XCTAssertTrue(match(0, .option))
     }
 }

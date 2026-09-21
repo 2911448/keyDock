@@ -35,7 +35,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
         statusItem.button?.image = NSImage(systemSymbolName: "keyboard", accessibilityDescription: "KeyDock")
         statusItem.button?.image?.isTemplate = true
-        statusItem.button?.toolTip = "KeyDock · 双击 Control 呼出键盘"
+        statusItem.button?.toolTip = "KeyDock · Option + 空格呼出键盘"
         model.onTogglePanel = { [weak self] in self?.togglePanel() }
         model.onShowPanel = { [weak self] in self?.showPanel() }
         model.onHidePanel = { [weak self] in self?.hidePanel() }
@@ -112,16 +112,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             let screen = NSScreen.screens.first { NSMouseInRect(NSEvent.mouseLocation, $0.frame, false) } ?? NSScreen.main
             let frame = screen?.visibleFrame ?? NSRect(x: 0, y: 0, width: 1440, height: 900)
             let width = min(CGFloat(1010), frame.width - 40)
-            let height: CGFloat = 462 + (model.errorMessage == nil ? 0 : 42) + (model.listenerActive ? 0 : 50)
+            let height: CGFloat = 462 + (model.errorMessage == nil ? 0 : 42) + (model.showShortcutWarning ? 50 : 0)
             panel.setFrame(NSRect(x: frame.midX - width / 2, y: frame.midY - height / 2, width: width, height: height), display: true)
         }
         model.isPanelVisible = true
         panel.makeKeyAndOrderFront(nil)
-        if model.resumeFunctionEditor {
-            model.resumeFunctionEditor = false
-            model.isEditing = true
-            model.sheet = .appPicker
-        }
+
     }
 
     private func hidePanel() {
@@ -154,6 +150,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func refreshMenu() {
         guard statusItem != nil else { return }
+        if model.isPanelVisible, let panel {
+            let height: CGFloat = 462 + (model.errorMessage == nil ? 0 : 42) + (model.showShortcutWarning ? 50 : 0)
+            if panel.frame.height != height {
+                var frame = panel.frame
+                frame.origin.y += (frame.height - height) / 2
+                frame.size.height = height
+                panel.setFrame(frame, display: true)
+            }
+        }
         let menu = NSMenu()
         let header = NSMenuItem(title: model.isPaused ? "KeyDock · 已暂停" : "KeyDock · \(model.listenerStatus)", action: nil, keyEquivalent: "")
         header.isEnabled = false
@@ -168,7 +173,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         menu.addItem(.separator())
         add("退出 KeyDock", action: #selector(quitAction), to: menu)
         statusItem.menu = menu
-        statusItem.button?.toolTip = "KeyDock · 双击 \(model.configuration.summonKey.title) 呼出键盘"
+        statusItem.button?.toolTip = "KeyDock · \(model.configuration.summonKey.title) + 空格呼出键盘"
     }
     private func add(_ title: String, action: Selector, to menu: NSMenu, checked: Bool = false) {
         let item = NSMenuItem(title: title, action: action, keyEquivalent: "")

@@ -1,0 +1,45 @@
+# App Store Connect 文案草稿
+
+状态：尚未提交。名称可用性、开发者名称、联系方式、定价、地区和隐私页面 URL 待确认。
+
+- 名称：KeyDock
+- 副标题：把常用应用放到键盘上
+- 分类：效率
+- 关键词：快捷键,启动器,键盘,应用切换,菜单栏,效率
+- 平台：macOS 14+，Apple Silicon
+- 版本：1.2.0（build 7，上传前检查是否已占用）
+- 隐私政策 URL：待公开部署
+- 支持 URL：待确认
+- 版权：待确认
+- 定价与销售地区：待确认
+
+## 描述
+
+把常用 Mac 应用放到熟悉的键盘位置，少找一次图标，多一点专注。
+
+KeyDock 是一个菜单栏应用启动器。为字母、数字和标点键选择应用，即可用统一前缀加按键快速调用，也可以打开半透明键盘面板，直接按键或点击图标。
+
+• 应用未运行时启动，在后台时切到前台。
+• 再次调用前台应用时请求隐藏；应用未响应时会提示。
+• 默认 Option + 空格呼出键盘面板，可在设置更换呼出组合。
+• 支持本机应用搜索、手动选择、替换和清除绑定。
+• 支持深浅色、暂停快捷键和可选登录启动。
+• 沙盒运行，无需辅助功能权限；配置只保存在本机。
+
+首次使用请点击菜单栏键盘图标，进入编辑，配置自己的第一个按键。全局快捷键可能与系统或其他软件冲突，可在设置查看并调整。
+
+商店版仅用于应用启动与切换，不提供应用内部功能操作、模拟按键或菜单栏图标收纳。
+
+## 审核备注（英文草稿）
+
+KeyDock is a menu bar application launcher. No account or subscription is required to use the app. On first launch it shows an empty keyboard in editing mode. Click a letter key, select an installed application, then click Done. The default app shortcut prefix is Control. Option-Space toggles the panel; both settings can be changed.
+
+Only configured shortcuts are registered using RegisterEventHotKey. KeyDock does not request Accessibility or Input Monitoring access, read other applications' menus, or generate keyboard input. Editing, focused settings, and the Pause option release the global registrations. Conflicts are reported in Settings.
+
+The app uses NSWorkspace to open applications and NSRunningApplication.hide to request hiding. A target app may refuse to hide; KeyDock reports that outcome instead of using Accessibility as a fallback. The menu bar menu always provides access to the keyboard, settings, and Quit.
+
+Login at startup is off by default and is enabled only by the user with SMAppService. Configuration and user-selected application bookmarks remain in the sandbox container.
+
+## 截图计划
+
+使用最终商店版真实截图：配置了普通应用的键盘面板、应用搜索绑定界面、快捷键与冲突设置。不要复用展示应用功能绑定或菜单栏收纳的旧截图。截图完成前先去除测试警告和个人敏感信息。

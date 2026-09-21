@@ -31,13 +31,13 @@ struct KeyboardView: View {
     var body: some View {
         VStack(spacing: 0) {
             header
-            if !model.listenerActive {
+            if model.showShortcutWarning {
                 HStack(spacing: 8) {
                     Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(.orange)
-                    Text("全局快捷键尚未生效：双击呼出、后台启动和快捷键隐藏暂不可用。")
+                    Text("部分全局快捷键尚未注册，请到设置检查冲突。")
                         .font(.system(size: 11))
                     Spacer()
-                    Button("检查授权") { model.showSettings() }.controlSize(.small)
+                    Button("检查快捷键") { model.showSettings() }.controlSize(.small)
                 }
                 .padding(10).background(.orange.opacity(0.09), in: RoundedRectangle(cornerRadius: 8))
                 .padding(.horizontal, 24).padding(.bottom, 10)
@@ -79,7 +79,7 @@ struct KeyboardView: View {
         .overlay(RoundedRectangle(cornerRadius: 22).strokeBorder(.primary.opacity(0.1), lineWidth: 1))
         .sheet(item: $model.sheet) { sheet in
             switch sheet {
-            case .appPicker: AppPickerView(model: model, catalog: model.catalog, draft: model.functionDraft)
+            case .appPicker: AppPickerView(model: model, catalog: model.catalog)
             }
         }
     }
@@ -96,7 +96,7 @@ struct KeyboardView: View {
                     Text(model.isEditing ? "编辑键盘" : "你的应用，触手可及")
                         .font(.system(size: 10, weight: .medium)).foregroundStyle(.secondary)
                 }
-                Text(model.isEditing ? "点击一个键帽，绑定应用或应用功能。" : "按字母或点击启动 · 再次调用前台 App 即可隐藏")
+                Text(model.isEditing ? "点击一个键帽，绑定应用。" : "按字母或点击启动 · 再次调用前台 App 即可隐藏")
                     .font(.system(size: 11)).foregroundStyle(.secondary)
             }
             Spacer()
@@ -118,7 +118,9 @@ struct KeyboardView: View {
     private var footer: some View {
         HStack(spacing: 8) {
             Circle().fill(model.isPaused ? .orange : (model.listenerActive ? .green : .orange)).frame(width: 5, height: 5)
-            if !model.listenerActive {
+            if model.isPaused || model.isEditing {
+                Text(model.isPaused ? "全局快捷键已暂停" : "编辑时暂停快捷键").foregroundStyle(.secondary)
+            } else if !model.listenerActive {
                 Button("启用全局快捷键") { model.showSettings() }
                     .buttonStyle(.plain).foregroundStyle(.secondary)
             } else { Text(model.isPaused ? "全局快捷键已暂停" : "\(model.configuration.bindings.count) 个绑定已就位").foregroundStyle(.secondary) }
@@ -130,7 +132,7 @@ struct KeyboardView: View {
                 Text("\(model.configuration.prefix.symbol) + 按键").foregroundStyle(.secondary)
             }
             Spacer()
-            Text("连按两次 \(model.configuration.summonKey.symbol)").foregroundStyle(.secondary)
+            Text("\(model.configuration.summonKey.symbol) + 空格").foregroundStyle(.secondary)
             Text("呼出").foregroundStyle(.tertiary)
         }
         .font(.system(size: 10, weight: .medium))
@@ -161,10 +163,6 @@ private struct KeyCapView: View {
                     VStack(spacing: 2) {
                         Image(nsImage: model.catalog.icon(at: binding.path)).resizable().interpolation(.high).frame(width: 27, height: 27)
                         Text(key.label).font(.system(size: 9, weight: .semibold, design: .rounded)).foregroundStyle(.secondary)
-                    }
-                    if binding.function != nil {
-                        Image(systemName: "bolt.circle.fill").font(.system(size: 12)).foregroundStyle(Color.accentColor)
-                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing).padding(3)
                     }
                     if model.isEditing && hovered {
                         Image(systemName: "pencil.circle.fill").font(.system(size: 13)).foregroundStyle(.white, Color.accentColor)

@@ -15,7 +15,7 @@ final class ConfigurationTests: XCTestCase {
         XCTAssertEqual(try repository.load(), Configuration())
         var config = Configuration()
         config.prefix = .option
-        config.summonKey = .function
+        config.summonKey = .command
         config.bindings = [AppBinding(keyCode: 0, bundleIdentifier: "com.apple.Safari", path: "/Applications/Safari.app", name: "Safari")]
         try repository.save(config)
         XCTAssertEqual(try repository.load(), config)

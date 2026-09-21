@@ -1,0 +1,284 @@
+// !$*UTF8*$!
+{
+"archiveVersion" = 1;
+"classes" = {
+};
+"objectVersion" = 56;
+"objects" = {
+"2D06F032925F2349D24358E7" = {
+"isa" = "PBXFileReference";
+"lastKnownFileType" = "sourcecode.swift";
+"path" = "Sources/KeyDock/AppModel.swift";
+"sourceTree" = "<group>";
+};
+"684435B68A3B99ABF16DD7C2" = {
+"isa" = "PBXBuildFile";
+"fileRef" = "2D06F032925F2349D24358E7";
+};
+"09DBA9690A0D04E138293237" = {
+"isa" = "PBXFileReference";
+"lastKnownFileType" = "sourcecode.swift";
+"path" = "Sources/KeyDock/ApplicationCatalog.swift";
+"sourceTree" = "<group>";
+};
+"67310E56F2538CA825DD7658" = {
+"isa" = "PBXBuildFile";
+"fileRef" = "09DBA9690A0D04E138293237";
+};
+"F9C9935C9DCC9BE85A1E3986" = {
+"isa" = "PBXFileReference";
+"lastKnownFileType" = "sourcecode.swift";
+"path" = "Sources/KeyDock/ApplicationHider.swift";
+"sourceTree" = "<group>";
+};
+"423494626B412A95610A1452" = {
+"isa" = "PBXBuildFile";
+"fileRef" = "F9C9935C9DCC9BE85A1E3986";
+};
+"11C74CF3E9D3D9D8D66FAD7C" = {
+"isa" = "PBXFileReference";
+"lastKnownFileType" = "sourcecode.swift";
+"path" = "Sources/KeyDock/ConfigurationViews.swift";
+"sourceTree" = "<group>";
+};
+"DAC79AD45767798CF42B10C2" = {
+"isa" = "PBXBuildFile";
+"fileRef" = "11C74CF3E9D3D9D8D66FAD7C";
+};
+"A0E42BA5741BFAE214F1DB5D" = {
+"isa" = "PBXFileReference";
+"lastKnownFileType" = "sourcecode.swift";
+"path" = "Sources/KeyDock/KeyDockApp.swift";
+"sourceTree" = "<group>";
+};
+"1F0324261FCA0944A0552EFC" = {
+"isa" = "PBXBuildFile";
+"fileRef" = "A0E42BA5741BFAE214F1DB5D";
+};
+"BE1671F7AE42D93367F67137" = {
+"isa" = "PBXFileReference";
+"lastKnownFileType" = "sourcecode.swift";
+"path" = "Sources/KeyDock/KeyboardMonitor.swift";
+"sourceTree" = "<group>";
+};
+"ED6D8686B468FBA4E27327B0" = {
+"isa" = "PBXBuildFile";
+"fileRef" = "BE1671F7AE42D93367F67137";
+};
+"5BD8A5D56A6AA365AD84D916" = {
+"isa" = "PBXFileReference";
+"lastKnownFileType" = "sourcecode.swift";
+"path" = "Sources/KeyDock/KeyboardPanel.swift";
+"sourceTree" = "<group>";
+};
+"DDDE827C0BF4E3C4C671A077" = {
+"isa" = "PBXBuildFile";
+"fileRef" = "5BD8A5D56A6AA365AD84D916";
+};
+"B52D8DF3319A384C56C5D0B6" = {
+"isa" = "PBXFileReference";
+"lastKnownFileType" = "sourcecode.swift";
+"path" = "Sources/KeyDock/KeyboardView.swift";
+"sourceTree" = "<group>";
+};
+"D30FD3B7DC35EF27BA470B33" = {
+"isa" = "PBXBuildFile";
+"fileRef" = "B52D8DF3319A384C56C5D0B6";
+};
+"81207DD9B302E8D11709CEF2" = {
+"isa" = "PBXFileReference";
+"lastKnownFileType" = "sourcecode.swift";
+"path" = "Sources/KeyDock/PrivacyPolicy.swift";
+"sourceTree" = "<group>";
+};
+"1D51BB8414CBCEC6D816AD86" = {
+"isa" = "PBXBuildFile";
+"fileRef" = "81207DD9B302E8D11709CEF2";
+};
+"21E9F7741A551F18337E4300" = {
+"isa" = "PBXFileReference";
+"lastKnownFileType" = "sourcecode.swift";
+"path" = "Sources/KeyDock/SettingsWindowController.swift";
+"sourceTree" = "<group>";
+};
+"8E6F0AE3BAFB929092DA710F" = {
+"isa" = "PBXBuildFile";
+"fileRef" = "21E9F7741A551F18337E4300";
+};
+"D7DBEA01AB2F56E7EDB6FA14" = {
+"isa" = "PBXFileReference";
+"lastKnownFileType" = "image.icns";
+"path" = "Resources/KeyDock.icns";
+"sourceTree" = "<group>";
+};
+"F92EC201CB47B74EBC949334" = {
+"isa" = "PBXBuildFile";
+"fileRef" = "D7DBEA01AB2F56E7EDB6FA14";
+};
+"5F2C0BAFF5ECE16FF3ADD729" = {
+"isa" = "PBXFileReference";
+"lastKnownFileType" = "text.xml";
+"path" = "Resources/PrivacyInfo.xcprivacy";
+"sourceTree" = "<group>";
+};
+"37549E566C22DEA30243E746" = {
+"isa" = "PBXBuildFile";
+"fileRef" = "5F2C0BAFF5ECE16FF3ADD729";
+};
+"A8792157CB4F27FB949C035F" = {
+"isa" = "PBXFileReference";
+"explicitFileType" = "wrapper.application";
+"includeInIndex" = 0;
+"path" = "KeyDock.app";
+"sourceTree" = "BUILT_PRODUCTS_DIR";
+};
+"0A3E27B8CA818264D75C8D81" = {
+"isa" = "PBXGroup";
+"children" = ("A8792157CB4F27FB949C035F");
+"name" = "Products";
+"sourceTree" = "<group>";
+};
+"4813494D137E1631BBA301D5" = {
+"isa" = "PBXGroup";
+"children" = ("2D06F032925F2349D24358E7","09DBA9690A0D04E138293237","F9C9935C9DCC9BE85A1E3986","11C74CF3E9D3D9D8D66FAD7C","A0E42BA5741BFAE214F1DB5D","BE1671F7AE42D93367F67137","5BD8A5D56A6AA365AD84D916","B52D8DF3319A384C56C5D0B6","81207DD9B302E8D11709CEF2","21E9F7741A551F18337E4300","D7DBEA01AB2F56E7EDB6FA14","5F2C0BAFF5ECE16FF3ADD729","0A3E27B8CA818264D75C8D81");
+"sourceTree" = "<group>";
+};
+"BC4A71180870F7945155FBB0" = {
+"isa" = "XCLocalSwiftPackageReference";
+"relativePath" = ".";
+};
+"0D45F5FD462B8C70BFFB1002" = {
+"isa" = "XCSwiftPackageProductDependency";
+"package" = "BC4A71180870F7945155FBB0";
+"productName" = "KeyDockCore";
+};
+"5BE1B437EBF691EFCD56CD87" = {
+"isa" = "PBXBuildFile";
+"productRef" = "0D45F5FD462B8C70BFFB1002";
+};
+"878A52FC5FF6A57D50B7B870" = {
+"isa" = "PBXSourcesBuildPhase";
+"buildActionMask" = 2147483647;
+"files" = ("684435B68A3B99ABF16DD7C2","67310E56F2538CA825DD7658","423494626B412A95610A1452","DAC79AD45767798CF42B10C2","1F0324261FCA0944A0552EFC","ED6D8686B468FBA4E27327B0","DDDE827C0BF4E3C4C671A077","D30FD3B7DC35EF27BA470B33","1D51BB8414CBCEC6D816AD86","8E6F0AE3BAFB929092DA710F");
+"runOnlyForDeploymentPostprocessing" = 0;
+};
+"41D311A605520FC7B8B9A980" = {
+"isa" = "PBXResourcesBuildPhase";
+"buildActionMask" = 2147483647;
+"files" = ("F92EC201CB47B74EBC949334","37549E566C22DEA30243E746");
+"runOnlyForDeploymentPostprocessing" = 0;
+};
+"E2AA269EB967A8853A258BFA" = {
+"isa" = "PBXFrameworksBuildPhase";
+"buildActionMask" = 2147483647;
+"files" = ("5BE1B437EBF691EFCD56CD87");
+"runOnlyForDeploymentPostprocessing" = 0;
+};
+"7607E060366236497909AD63" = {
+"isa" = "XCBuildConfiguration";
+"name" = "Debug";
+"buildSettings" = {
+"SDKROOT" = "macosx";
+"MACOSX_DEPLOYMENT_TARGET" = "14.0";
+"ARCHS" = "arm64";
+"SWIFT_VERSION" = "5.0";
+"CLANG_ENABLE_MODULES" = "YES";
+"SWIFT_OPTIMIZATION_LEVEL" = "-Onone";
+"DEBUG_INFORMATION_FORMAT" = "dwarf";
+};
+};
+"20D16222A5CB9C5786FEB6B3" = {
+"isa" = "XCBuildConfiguration";
+"name" = "Debug";
+"buildSettings" = {
+"PRODUCT_NAME" = "KeyDock";
+"PRODUCT_BUNDLE_IDENTIFIER" = "io.keydock.app";
+"INFOPLIST_FILE" = "Info.plist";
+"GENERATE_INFOPLIST_FILE" = "NO";
+"CODE_SIGN_ENTITLEMENTS" = "Resources/KeyDock.entitlements";
+"CODE_SIGN_STYLE" = "Automatic";
+"ENABLE_APP_SANDBOX" = "YES";
+"ENABLE_HARDENED_RUNTIME" = "YES";
+"SWIFT_EMIT_LOC_STRINGS" = "NO";
+"LD_RUNPATH_SEARCH_PATHS" = ("$(inherited)","@executable_path/../Frameworks");
+"SKIP_INSTALL" = "NO";
+"INSTALL_PATH" = "$(LOCAL_APPS_DIR)";
+"COMBINE_HIDPI_IMAGES" = "YES";
+};
+};
+"0CC31A010A9EAFED2597BEBC" = {
+"isa" = "XCBuildConfiguration";
+"name" = "Release";
+"buildSettings" = {
+"SDKROOT" = "macosx";
+"MACOSX_DEPLOYMENT_TARGET" = "14.0";
+"ARCHS" = "arm64";
+"SWIFT_VERSION" = "5.0";
+"CLANG_ENABLE_MODULES" = "YES";
+"SWIFT_OPTIMIZATION_LEVEL" = "-O";
+"DEBUG_INFORMATION_FORMAT" = "dwarf-with-dsym";
+};
+};
+"A74CFA757CE7CA1700BC6197" = {
+"isa" = "XCBuildConfiguration";
+"name" = "Release";
+"buildSettings" = {
+"PRODUCT_NAME" = "KeyDock";
+"PRODUCT_BUNDLE_IDENTIFIER" = "io.keydock.app";
+"INFOPLIST_FILE" = "Info.plist";
+"GENERATE_INFOPLIST_FILE" = "NO";
+"CODE_SIGN_ENTITLEMENTS" = "Resources/KeyDock.entitlements";
+"CODE_SIGN_STYLE" = "Automatic";
+"ENABLE_APP_SANDBOX" = "YES";
+"ENABLE_HARDENED_RUNTIME" = "YES";
+"SWIFT_EMIT_LOC_STRINGS" = "NO";
+"LD_RUNPATH_SEARCH_PATHS" = ("$(inherited)","@executable_path/../Frameworks");
+"SKIP_INSTALL" = "NO";
+"INSTALL_PATH" = "$(LOCAL_APPS_DIR)";
+"COMBINE_HIDPI_IMAGES" = "YES";
+};
+};
+"DF10D92617D0252A0BF9C919" = {
+"isa" = "XCConfigurationList";
+"buildConfigurations" = ("7607E060366236497909AD63","0CC31A010A9EAFED2597BEBC");
+"defaultConfigurationIsVisible" = 0;
+"defaultConfigurationName" = "Release";
+};
+"78F249D9140B5D7B47DA2B7D" = {
+"isa" = "XCConfigurationList";
+"buildConfigurations" = ("20D16222A5CB9C5786FEB6B3","A74CFA757CE7CA1700BC6197");
+"defaultConfigurationIsVisible" = 0;
+"defaultConfigurationName" = "Release";
+};
+"A172CEDCAE47474B615C54D5" = {
+"isa" = "PBXNativeTarget";
+"buildConfigurationList" = "78F249D9140B5D7B47DA2B7D";
+"buildPhases" = ("878A52FC5FF6A57D50B7B870","E2AA269EB967A8853A258BFA","41D311A605520FC7B8B9A980");
+"buildRules" = ();
+"dependencies" = ();
+"name" = "KeyDock";
+"packageProductDependencies" = ("0D45F5FD462B8C70BFFB1002");
+"productName" = "KeyDock";
+"productReference" = "A8792157CB4F27FB949C035F";
+"productType" = "com.apple.product-type.application";
+};
+"244210E48437B6556980A702" = {
+"isa" = "PBXProject";
+"attributes" = {
+"LastUpgradeCheck" = "1600";
+};
+"buildConfigurationList" = "DF10D92617D0252A0BF9C919";
+"compatibilityVersion" = "Xcode 14.0";
+"developmentRegion" = "zh-Hans";
+"hasScannedForEncodings" = 0;
+"knownRegions" = ("zh-Hans","en","Base");
+"mainGroup" = "4813494D137E1631BBA301D5";
+"productRefGroup" = "0A3E27B8CA818264D75C8D81";
+"projectDirPath" = "";
+"projectRoot" = "";
+"packageReferences" = ("BC4A71180870F7945155FBB0");
+"targets" = ("A172CEDCAE47474B615C54D5");
+};
+};
+"rootObject" = "244210E48437B6556980A702";
+}
