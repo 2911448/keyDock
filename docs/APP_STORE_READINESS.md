@@ -32,8 +32,9 @@ Xcode 登录后，原先的 `No Accounts`、安装包发行证书和描述文件
 
 1. 账号、团队、应用记录、正式工具链及上传已完成；在 App Store Connect 确认 Apple 处理结果，处理通过后再安排 TestFlight。
 2. 后续重建使用 `DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer`，运行归档/导出脚本。系统 xcode-select 仍指向 CommandLineTools，本次没有修改全局选择。
-3. 补齐 [商店资料](store/metadata-zh-Hans.md)：开发者/版权名称、支持邮箱或网址、定价、销售地区、隐私政策公开 URL。这些信息已询问用户，尚待回复；当前草稿不可直接提交。
-4. 完成下述实体环境验证与最终截图，完成 App Store Connect 上传校验、TestFlight、问卷和审核备注。默认建议手动发布；不把上传成功等同于上架。
+3. 用户已确认名称 `keyDock`、免费及邮箱 `xin2911448@icloud.com`；版权资料整理为 `2026 keyDock`。销售地区待确认。
+4. [隐私政策](https://github.com/2911448/keyDock/blob/feat/app-store/docs/store/privacy-policy.md)与[支持页面](https://github.com/2911448/keyDock/blob/feat/app-store/docs/store/support.md)已推送到公开 GitHub 仓库，并验证无需登录可读取。名称、价格、邮箱与链接目前仅已整理到[商店资料](store/metadata-zh-Hans.md)，尚未写入 Apple 后台；Safari 的 App Store Connect 仍在登录页，等待用户完成网页登录。
+5. 完成下述实体环境验证与最终截图，完成 App Store Connect 上传校验、TestFlight、问卷和审核备注。默认建议手动发布；不把上传成功等同于上架。
 
 ## 未完成的功能验收
 

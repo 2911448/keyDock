@@ -1,6 +1,6 @@
 # App Store Connect 文案草稿
 
-状态：已创建 KeyDock 商店记录（io.keydock.app，主语言简体中文），已使用正式版 Xcode 上传 1.2.0（7），Apple 处理中，尚未提交审核。用户已确认名称 keyDock、免费和联系邮箱；销售地区待确认。GitHub 隐私及支持页面将在发布后验证。
+状态：已创建 KeyDock 商店记录（io.keydock.app，主语言简体中文），已使用正式版 Xcode 上传 1.2.0（7），Apple 处理中，尚未提交审核。用户已确认名称 keyDock、免费和联系邮箱；销售地区待确认。GitHub 隐私及支持页面已公开发布并验证无需登录可读取。以下名称、价格及联系信息已整理，但尚未写入 App Store Connect，等待网页端登录。
 
 - 名称：keyDock
 - 副标题：把常用应用放到键盘上
